@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SMC Learning Hub</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <span class="logo-icon">🎯</span>
+    <span class="logo-text">SMC Learning Hub</span>
+  </div>
+  <div class="header-right">
+    <span class="progress-label" id="progressLabel">0 / 28</span>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <nav id="moduleNav"></nav>
+    <div class="sidebar-footer">
+      <button class="checklist-trigger" onclick="openChecklist()">
+        📋 Pre-Entry Checklist
+      </button>
+    </div>
+  </aside>
+
+  <main class="viewer">
+    <div class="slide-meta">
+      <span class="slide-module-name" id="slideModuleName"></span>
+      <span class="slide-counter" id="slideCounter"></span>
+    </div>
+    <h2 class="slide-title" id="slideTitle"></h2>
+
+    <div class="image-wrapper">
+      <img id="mainImg" src="" alt="" onclick="openLightbox(this.src)">
+      <span class="zoom-hint">คลิกภาพเพื่อขยาย</span>
+    </div>
+
+    <div class="nav-row">
+      <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">◄ ก่อนหน้า</button>
+      <button class="mark-btn" id="markBtn" onclick="toggleMark()">✓ Mark as Read</button>
+      <button class="nav-btn" id="nextBtn" onclick="navigate(1)">ถัดไป ►</button>
+    </div>
+
+    <div class="concepts" id="conceptsPanel"></div>
+  </main>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <img id="lightboxImg" src="" alt="">
+  <button class="lb-close" onclick="event.stopPropagation(); closeLightbox()">✕</button>
+</div>
+
+<!-- Checklist Modal -->
+<div class="modal-overlay" id="checklistOverlay" onclick="closeChecklist()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-hd">
+      <h2>📋 Pre-Entry Checklist</h2>
+      <button onclick="closeChecklist()">✕</button>
+    </div>
+    <p class="modal-sub">เช็กทุกข้อก่อนกดออเดอร์ — ไม่ครบ = ไม่เข้า!</p>
+    <ul id="checklistItems"></ul>
+    <div class="modal-footer">
+      <div class="check-score">ผ่าน: <span id="checkScore">0</span> / 10</div>
+      <button class="reset-btn" onclick="resetChecklist()">🔄 Reset ทั้งหมด</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
