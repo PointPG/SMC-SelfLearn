@@ -91,6 +91,7 @@ const modules = [
     slides: [
       {
         file: 'SMC BOS.jpg',
+        chart: 'bos',
         title: 'Break of Structure (BOS) — การเบรกโครงสร้าง',
         concepts: [
           'BOS = ราคา "เบรกจุดสูงสุด/ต่ำสุดเดิม" ที่เป็นโครงสร้างสำคัญของแนวโน้ม แสดงถึงการเปลี่ยนแปลงและทิศทางที่ชัดเจน',
@@ -103,6 +104,7 @@ const modules = [
       },
       {
         file: 'SMC MSS.jpg',
+        chart: 'mss',
         title: 'Market Structure Shift (MSS) — การเปลี่ยนโครงสร้างราคา',
         concepts: [
           'MSS = การเปลี่ยนทิศทางโครงสร้างราคา (จากขาลงเป็นขาขึ้น หรือกลับกัน) หลังจากเกิด Liquidity Sweep',
@@ -114,6 +116,7 @@ const modules = [
       },
       {
         file: 'SMC CHOCH.jpg',
+        chart: 'mss',
         title: 'Change of Character (CHoCH) — สัญญาณเปลี่ยนแนวโน้ม',
         concepts: [
           'CHoCH = สัญญาณที่บอกว่า "โครงสร้างตลาดอาจเปลี่ยนทิศทาง" เมื่อราคาทำลายโครงสร้างของฝั่งตรงข้ามมาระยะหนึ่ง',
@@ -130,6 +133,7 @@ const modules = [
     slides: [
       {
         file: 'SMC LIQUIDITY.jpg',
+        chart: 'sweep',
         title: 'Liquidity — สภาพคล่องที่เทรดเดอร์ต้องรู้',
         concepts: [
           'Liquidity = จุดที่มีคำสั่ง Stop Loss รออยู่จำนวนมากในตลาด ราคา "มักถูกดึง" ไปกวาดสิ่งเหล่านั้นก่อนจะกลับทิศทางจริง',
@@ -152,6 +156,7 @@ const modules = [
       },
       {
         file: 'SMC MANIPULATION SWEEP.jpg',
+        chart: 'sweep',
         title: 'Manipulation / Sweep — การกวาด Stop Loss และหลอกทิศทาง',
         concepts: [
           'Manipulation/Sweep = ราคาเคลื่อนตัวออกนอกกรอบชั่วคราวเพื่อกวาด Stop Loss ของนักลงทุนก่อนกลับทิศทางจริง',
@@ -164,6 +169,7 @@ const modules = [
       },
       {
         file: 'SMC EXPANSION DISPLACEMENT.jpg',
+        chart: 'expansion',
         title: 'Expansion / Displacement — แรงส่งของราคา',
         concepts: [
           'Expansion/Displacement = ราคาเคลื่อนตัวออกโกโลด้วยแรงซื้อ/ขายจำนวนมากฉับพลัน ทำให้เกิดแท่งเทียนยาวต่อเนื่องและแทบไม่มีการพักตัว',
@@ -180,6 +186,7 @@ const modules = [
     slides: [
       {
         file: 'SMC OB.jpg',
+        chart: 'ob',
         title: 'Order Block (OB) — โซนคำสั่งสำคัญของ Smart Money',
         concepts: [
           'Order Block = โซนที่มีคำสั่งซื้อ/ขายของรายใหญ่หรือสถาบันอยู่หนาแน่น มักเป็นจุดที่ราคากลับมา Retest ก่อนต่อ',
@@ -192,6 +199,7 @@ const modules = [
       },
       {
         file: 'SMC FVG.jpg',
+        chart: 'fvg',
         title: 'Fair Value Gap (FVG) — ช่องว่างราคา',
         concepts: [
           'FVG = ช่องว่างของราคาที่เกิดจากการเคลื่อนตัวอย่างรวดเร็ว ทำให้ราคาข้ามโซนนั้นโดยไม่มีการซื้อขาย — เกิดเป็น "ช่องว่างของมูลค่า"',
@@ -204,6 +212,7 @@ const modules = [
       },
       {
         file: 'SMC PREM DISC ZONE.jpg',
+        chart: 'premdisc',
         title: 'Premium & Discount — โซนแพง-ถูกในการเทรด',
         concepts: [
           'การแบ่งช่วงราคา (Range) เป็น 2 โซนหลักเพื่อหาบริเวณที่ "คุ้มค่า" — ซื้อในโซนถูก (Discount) ขายในโซนแพง (Premium)',
@@ -232,6 +241,7 @@ const modules = [
       },
       {
         file: 'SMC ENTRY AFTER MANIPULATION.jpg',
+        chart: 'buySetup',
         title: 'Entry After Manipulation — โมเดลเข้าเทรดหลังหลอกกวาดสภาพคล่อง',
         concepts: [
           '5 ขั้นตอน Entry After Manipulation: ① Liquidity Sweep ② MSS/BOS ③ Displacement ④ Retest OB/FVG ⑤ Entry เมื่อมีสัญญาณยืนยัน',
@@ -244,6 +254,7 @@ const modules = [
       },
       {
         file: 'SMC BUY SETUP.jpg',
+        chart: 'buySetup',
         title: 'Buy Setup — แผนเข้า Buy ด้วย SMC',
         concepts: [
           '7 ขั้นตอน Buy Setup: ① เช็ค Bias ตลาด (HTF) ② Liquidity Sweep (กวาด Low) ③ ยืนยันการกลับตัว MSS/BOS ④ จุดเข้า Entry Zone (Bullish OB/FVG) ⑤ รอราคา Retest ⑥ วาง Stop Loss ⑦ วาง Take Profit',
@@ -255,6 +266,7 @@ const modules = [
       },
       {
         file: 'SMC SELL ENTRY.jpg',
+        chart: 'sellSetup',
         title: 'Sell Setup — แผนเข้า Sell ด้วย SMC',
         concepts: [
           'Sell Setup ต้องมี 3 องค์ประกอบ: สภาพคล่องด้านบนถูกกวาด (Liquidity Taken) ✓  โครงสร้างเปลี่ยนเป็นขาลง (CHoCH/MSS) ✓  มี Supply Zone ให้เข้า Sell (OB/FVG) ✓',
@@ -403,7 +415,10 @@ const modules = [
 let currentModule = 0;
 let currentSlide = 0;
 let readSlides = new Set();
+let bookmarks = new Set();
+let notes = {};
 let checkState = {};
+let notesTimer = null;
 
 const TOTAL_SLIDES = modules.reduce((s, m) => s + m.slides.length, 0);
 
@@ -416,6 +431,21 @@ function loadProgress() {
     const data = JSON.parse(localStorage.getItem('smc_read') || '[]');
     readSlides = new Set(data);
   } catch { readSlides = new Set(); }
+}
+function saveBookmarks() {
+  localStorage.setItem('smc_bookmarks', JSON.stringify([...bookmarks]));
+}
+function loadBookmarks() {
+  try {
+    bookmarks = new Set(JSON.parse(localStorage.getItem('smc_bookmarks') || '[]'));
+  } catch { bookmarks = new Set(); }
+}
+function saveNotes() {
+  localStorage.setItem('smc_notes', JSON.stringify(notes));
+}
+function loadNotes() {
+  try { notes = JSON.parse(localStorage.getItem('smc_notes') || '{}'); }
+  catch { notes = {}; }
 }
 function saveChecklist() {
   localStorage.setItem('smc_check', JSON.stringify(checkState));
@@ -433,6 +463,7 @@ function goTo(mi, si) {
   currentSlide = si;
   renderSlide();
   renderSidebar();
+  closeSidebar();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 function navigate(dir) {
@@ -448,12 +479,25 @@ function navigate(dir) {
 }
 function toggleMark() {
   const key = slideKey(currentModule, currentSlide);
+  const mod = modules[currentModule];
+  const wasModuleDone = mod.slides.every((_, si) => readSlides.has(slideKey(currentModule, si)));
+
   if (readSlides.has(key)) readSlides.delete(key);
   else readSlides.add(key);
   saveProgress();
   renderMarkBtn();
   updateProgress();
   renderSidebar();
+
+  // Celebrate module / course completion
+  const nowModuleDone = mod.slides.every((_, si) => readSlides.has(slideKey(currentModule, si)));
+  if (!wasModuleDone && nowModuleDone) {
+    if (readSlides.size === TOTAL_SLIDES) {
+      showToast('🏆 ยอดเยี่ยม! เรียนครบทุกสไลด์แล้ว — พร้อมลุยตลาดจริง!', true);
+    } else {
+      showToast(`🎉 จบ Module "${mod.title}" แล้ว! เก่งมาก`, true);
+    }
+  }
 }
 
 // ===== RENDER =====
@@ -466,10 +510,12 @@ function renderSidebar() {
     const slideItems = mod.slides.map((slide, si) => {
       const isRead = readSlides.has(slideKey(mi, si));
       const isActiveSl = isActive && si === currentSlide;
+      const isBm = bookmarks.has(slideKey(mi, si));
       return `<li class="slide-nav-item ${isRead ? 'read' : ''} ${isActiveSl ? 'active-slide' : ''}"
         onclick="goTo(${mi}, ${si})">
         <span class="read-dot"></span>
         <span>${slide.title.split('—')[0].trim()}</span>
+        ${isBm ? '<span class="bm-dot">★</span>' : ''}
       </li>`;
     }).join('');
     return `<div class="module-item ${isActive ? 'active' : ''}">
@@ -503,8 +549,39 @@ function renderSlide() {
   document.getElementById('nextBtn').disabled =
     currentModule === modules.length - 1 && currentSlide === mod.slides.length - 1;
 
+  // replay fade-up animation
+  const body = document.getElementById('slideBody');
+  body.style.animation = 'none';
+  void body.offsetWidth;
+  body.style.animation = '';
+
+  // interactive candlestick chart (if this slide has one)
+  const sec = document.getElementById('chartSection');
+  if (slide.chart && window.mountChart) {
+    window.mountChart(sec, slide.chart);
+  } else {
+    sec.innerHTML = '';
+    sec.style.display = 'none';
+  }
+
   renderMarkBtn();
+  renderBookmarkBtn();
   renderConcepts(slide);
+  renderNotes();
+}
+
+function renderBookmarkBtn() {
+  const key = slideKey(currentModule, currentSlide);
+  const btn = document.getElementById('bookmarkBtn');
+  const isBm = bookmarks.has(key);
+  btn.textContent = isBm ? '★' : '☆';
+  btn.classList.toggle('marked', isBm);
+}
+
+function renderNotes() {
+  const key = slideKey(currentModule, currentSlide);
+  document.getElementById('notesArea').value = notes[key] || '';
+  document.getElementById('notesStatus').textContent = '';
 }
 
 function renderMarkBtn() {
@@ -517,8 +594,8 @@ function renderMarkBtn() {
 
 function renderConcepts(slide) {
   const panel = document.getElementById('conceptsPanel');
-  const items = slide.concepts.map(c =>
-    `<li><span class="bullet">▸</span>${c}</li>`
+  const items = slide.concepts.map((c, i) =>
+    `<li><span class="c-num">${i + 1}</span><span>${c}</span></li>`
   ).join('');
 
   let glossaryHtml = '';
@@ -534,8 +611,8 @@ function renderConcepts(slide) {
   }
 
   const checklistNote = slide.hasChecklist
-    ? `<div style="margin-top:16px;padding:12px 16px;background:#1c2128;border:1px solid #ffd700;border-radius:8px;font-size:13px;color:#ffd700;">
-        💡 กด <strong>📋 Pre-Entry Checklist</strong> ในแถบด้านซ้ายเพื่อเปิด Checklist แบบ Interactive ที่ tick ได้จริง!
+    ? `<div style="margin-top:16px;padding:12px 16px;background:#0a1322;border:1px solid var(--gold);border-radius:4px;font-size:13px;color:var(--gold);font-family:var(--thai);">
+        ▶ กด <strong>PRE-ENTRY CHECKLIST</strong> ในแถบด้านซ้ายเพื่อเปิด Checklist แบบ Interactive ที่ tick ได้จริง!
        </div>`
     : '';
 
@@ -546,7 +623,10 @@ function updateProgress() {
   const count = readSlides.size;
   const pct = Math.round((count / TOTAL_SLIDES) * 100);
   document.getElementById('progressLabel').textContent = `${count} / ${TOTAL_SLIDES}`;
-  document.getElementById('progressFill').style.width = `${pct}%`;
+  document.getElementById('progressPct').textContent = `${pct}%`;
+  const circumference = 2 * Math.PI * 16; // r = 16
+  const offset = circumference * (1 - pct / 100);
+  document.getElementById('ringFill').style.strokeDashoffset = offset;
 }
 
 // ===== LIGHTBOX =====
@@ -561,11 +641,24 @@ function closeLightbox() {
 }
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
-    closeLightbox();
-    closeChecklist();
+    closeLightbox(); closeChecklist(); closeGlossary(); closeBookmarks();
+    closeSearch();
+    document.activeElement && document.activeElement.blur();
+    return;
+  }
+  // don't hijack keys while typing in notes/search
+  const tag = (e.target.tagName || '').toLowerCase();
+  if (tag === 'input' || tag === 'textarea') {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') return;
+    if (e.key !== '/') return;
   }
   if (e.key === 'ArrowRight') navigate(1);
   if (e.key === 'ArrowLeft') navigate(-1);
+  if (e.key === '/') { e.preventDefault(); document.getElementById('searchInput').focus(); }
+  if (e.key.toLowerCase() === 'm') toggleMark();
+  if (e.key.toLowerCase() === 'f') toggleBookmark();
+  if (e.key.toLowerCase() === 'g') openGlossary();
+  if (e.key.toLowerCase() === 'b') openBookmarks();
 });
 
 // ===== CHECKLIST =====
@@ -598,6 +691,8 @@ function toggleCheckItem(id) {
 function updateCheckScore() {
   const done = Object.values(checkState).filter(Boolean).length;
   document.getElementById('checkScore').textContent = done;
+  const pct = Math.round((done / checklistData.length) * 100);
+  document.getElementById('checkProgressFill').style.width = `${pct}%`;
 }
 function resetChecklist() {
   checkState = {};
@@ -605,9 +700,176 @@ function resetChecklist() {
   renderChecklist();
 }
 
+// ===== NOTES =====
+function onNotesInput() {
+  const key = slideKey(currentModule, currentSlide);
+  notes[key] = document.getElementById('notesArea').value;
+  document.getElementById('notesStatus').textContent = 'กำลังบันทึก...';
+  clearTimeout(notesTimer);
+  notesTimer = setTimeout(() => {
+    if (!notes[key]) delete notes[key];
+    saveNotes();
+    document.getElementById('notesStatus').textContent = '✓ บันทึกแล้ว';
+    setTimeout(() => { document.getElementById('notesStatus').textContent = ''; }, 1500);
+  }, 600);
+}
+
+// ===== BOOKMARKS =====
+function toggleBookmark() {
+  const key = slideKey(currentModule, currentSlide);
+  if (bookmarks.has(key)) { bookmarks.delete(key); showToast('นำออกจากรายการบันทึกแล้ว'); }
+  else { bookmarks.add(key); showToast('⭐ บันทึกสไลด์แล้ว'); }
+  saveBookmarks();
+  renderBookmarkBtn();
+  renderSidebar();
+}
+function openBookmarks() {
+  renderBookmarksList();
+  document.getElementById('bookmarksOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeBookmarks() {
+  document.getElementById('bookmarksOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function renderBookmarksList() {
+  const wrap = document.getElementById('bmList');
+  if (!bookmarks.size) {
+    wrap.innerHTML = '<div class="bm-empty">ยังไม่มีสไลด์ที่บันทึก<br>กดไอคอน ☆ ที่หัวข้อสไลด์เพื่อบันทึก</div>';
+    return;
+  }
+  const entries = [...bookmarks].sort().map(key => {
+    const [mi, si] = key.split('-').map(Number);
+    const mod = modules[mi]; if (!mod) return '';
+    const slide = mod.slides[si]; if (!slide) return '';
+    return `<div class="bm-entry" onclick="goTo(${mi}, ${si}); closeBookmarks();">
+      <span class="bm-icon">${mod.icon}</span>
+      <div class="bm-text">
+        <div class="bm-title">${slide.title.split('—')[0].trim()}</div>
+        <div class="bm-mod">${mod.title}</div>
+      </div>
+      <button class="bm-remove" onclick="event.stopPropagation(); removeBookmark('${key}')">✕</button>
+    </div>`;
+  }).join('');
+  wrap.innerHTML = entries;
+}
+function removeBookmark(key) {
+  bookmarks.delete(key);
+  saveBookmarks();
+  renderBookmarksList();
+  renderBookmarkBtn();
+  renderSidebar();
+}
+
+// ===== GLOSSARY MODAL =====
+function openGlossary() {
+  document.getElementById('glossSearch').value = '';
+  renderGlossaryList('');
+  document.getElementById('glossaryOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeGlossary() {
+  document.getElementById('glossaryOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function renderGlossaryList(q) {
+  const term = (q || '').toLowerCase().trim();
+  const list = document.getElementById('glossList');
+  const entries = Object.entries(glossary).filter(([k, v]) =>
+    !term || k.toLowerCase().includes(term) || v.toLowerCase().includes(term)
+  );
+  if (!entries.length) {
+    list.innerHTML = '<div class="gloss-empty">ไม่พบคำศัพท์ที่ตรงกับการค้นหา</div>';
+    return;
+  }
+  list.innerHTML = entries.map(([k, v]) =>
+    `<div class="gloss-entry"><div class="gloss-term">${k}</div><div class="gloss-def">${v}</div></div>`
+  ).join('');
+}
+
+// ===== SEARCH =====
+function onSearch(q) {
+  const term = (q || '').toLowerCase().trim();
+  const box = document.getElementById('searchResults');
+  if (!term) { box.classList.remove('open'); box.innerHTML = ''; return; }
+
+  const results = [];
+  modules.forEach((mod, mi) => {
+    mod.slides.forEach((slide, si) => {
+      const inTitle = slide.title.toLowerCase().includes(term);
+      const matchConcept = slide.concepts.find(c => c.toLowerCase().includes(term));
+      const inGloss = (slide.glossary || []).some(g => g.toLowerCase().includes(term));
+      if (inTitle || matchConcept || inGloss) {
+        let sub = mod.title;
+        if (!inTitle && matchConcept) {
+          let snippet = matchConcept;
+          const idx = snippet.toLowerCase().indexOf(term);
+          const start = Math.max(0, idx - 20);
+          snippet = (start > 0 ? '…' : '') + snippet.slice(start, start + 60) + '…';
+          sub = highlight(snippet, term);
+        }
+        results.push({ mi, si, title: highlight(slide.title, term), sub });
+      }
+    });
+  });
+
+  if (!results.length) {
+    box.innerHTML = '<div class="search-empty">ไม่พบผลลัพธ์ 🔍</div>';
+  } else {
+    box.innerHTML = results.slice(0, 12).map(r =>
+      `<div class="search-item" onclick="jumpTo(${r.mi}, ${r.si})">
+        <div class="si-title">${r.title}</div>
+        <div class="si-sub">${r.sub}</div>
+      </div>`
+    ).join('');
+  }
+  box.classList.add('open');
+}
+function highlight(text, term) {
+  const i = text.toLowerCase().indexOf(term);
+  if (i < 0) return text;
+  return text.slice(0, i) + '<mark>' + text.slice(i, i + term.length) + '</mark>' + text.slice(i + term.length);
+}
+function jumpTo(mi, si) {
+  goTo(mi, si);
+  closeSearch();
+  document.getElementById('searchInput').value = '';
+}
+function closeSearch() {
+  document.getElementById('searchResults').classList.remove('open');
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.header-search')) closeSearch();
+});
+
+// ===== SIDEBAR (mobile) =====
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const bd = document.getElementById('sidebarBackdrop');
+  const open = sb.classList.toggle('open');
+  bd.classList.toggle('show', open);
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarBackdrop').classList.remove('show');
+}
+
+// ===== TOAST =====
+let toastTimer = null;
+function showToast(msg, celebrate) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.toggle('celebrate', !!celebrate);
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), celebrate ? 3500 : 1800);
+}
+
 // ===== INIT =====
 function init() {
   loadProgress();
+  loadBookmarks();
+  loadNotes();
   loadChecklist();
   renderSidebar();
   renderSlide();
