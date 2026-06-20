@@ -152,7 +152,7 @@ header {
 .checklist-trigger:hover { background: rgba(255,179,0,0.1); box-shadow: 0 0 16px rgba(255,179,0,0.25); }
 
 /* ── Viewer ── */
-.viewer { flex: 1; margin-left: var(--sidebar-w); padding: 24px 32px; max-width: 920px; }
+.viewer { flex: 1; margin-left: var(--sidebar-w); padding: 26px clamp(24px, 3.5vw, 56px) 56px; max-width: 1560px; width: 100%; }
 .slide-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
 .slide-module-name { font-size: 11px; color: var(--magenta); text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 8px rgba(255,46,151,0.3); }
 .slide-counter { font-size: 11px; color: var(--cyan); background: rgba(0,240,255,0.08); padding: 2px 10px; border-radius: 3px; border: 1px solid rgba(0,240,255,0.3); }
@@ -163,7 +163,9 @@ header {
 .bookmark-btn:hover { transform: scale(1.15); color: var(--gold); }
 .bookmark-btn.marked { color: var(--gold); text-shadow: 0 0 14px rgba(255,179,0,0.7); }
 
-.slide-body { animation: fadeUp 0.4s ease; }
+.slide-body { animation: fadeUp 0.4s ease; display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+.col-main, .col-side { display: flex; flex-direction: column; min-width: 0; }
+.col-side { position: sticky; top: calc(var(--header-h) + 24px); }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
 /* corner brackets (HUD) */
@@ -297,6 +299,10 @@ header {
 ::-webkit-scrollbar-thumb:hover { background: var(--cyan); }
 
 /* ── Responsive ── */
+@media (max-width: 1180px) {
+  .slide-body { grid-template-columns: 1fr; gap: 0; }
+  .col-side { position: static; top: auto; }
+}
 @media (max-width: 860px) {
   .menu-toggle { display: block; }
   .logo-text { display: none; }

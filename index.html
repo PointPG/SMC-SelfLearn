@@ -64,30 +64,34 @@
     </div>
 
     <div class="slide-body" id="slideBody">
-      <div class="image-wrapper">
-        <span class="corner tl"></span><span class="corner tr"></span>
-        <span class="corner bl"></span><span class="corner br"></span>
-        <img id="mainImg" src="" alt="" onclick="openLightbox(this.src)">
-        <span class="zoom-hint">⛶ EXPAND</span>
-      </div>
-
-      <div id="chartSection" class="chart-section"></div>
-
-      <div class="nav-row">
-        <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">◄ PREV</button>
-        <button class="mark-btn" id="markBtn" onclick="toggleMark()">[ ] MARK AS READ</button>
-        <button class="nav-btn" id="nextBtn" onclick="navigate(1)">NEXT ►</button>
-      </div>
-
-      <div class="concepts" id="conceptsPanel"></div>
-
-      <div class="notes-panel">
-        <div class="notes-head">
-          <span>▌ USER_NOTES.log</span>
-          <span class="notes-status" id="notesStatus"></span>
+      <div class="col-main">
+        <div class="image-wrapper">
+          <span class="corner tl"></span><span class="corner tr"></span>
+          <span class="corner bl"></span><span class="corner br"></span>
+          <img id="mainImg" src="" alt="" onclick="openLightbox(this.src)">
+          <span class="zoom-hint">⛶ EXPAND</span>
         </div>
-        <textarea id="notesArea" placeholder="> จดบันทึกแนวคิด ข้อสังเกต หรือ setup ที่อยากจำสำหรับสไลด์นี้..."
-                  oninput="onNotesInput()"></textarea>
+
+        <div id="chartSection" class="chart-section"></div>
+
+        <div class="nav-row">
+          <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">◄ PREV</button>
+          <button class="mark-btn" id="markBtn" onclick="toggleMark()">[ ] MARK AS READ</button>
+          <button class="nav-btn" id="nextBtn" onclick="navigate(1)">NEXT ►</button>
+        </div>
+      </div>
+
+      <div class="col-side">
+        <div class="concepts" id="conceptsPanel"></div>
+
+        <div class="notes-panel">
+          <div class="notes-head">
+            <span>▌ USER_NOTES.log</span>
+            <span class="notes-status" id="notesStatus"></span>
+          </div>
+          <textarea id="notesArea" placeholder="> จดบันทึกแนวคิด ข้อสังเกต หรือ setup ที่อยากจำสำหรับสไลด์นี้..."
+                    oninput="onNotesInput()"></textarea>
+        </div>
       </div>
     </div>
   </main>
