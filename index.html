@@ -27,6 +27,7 @@
   </div>
 
   <div class="header-right">
+    <button class="sim-toggle" id="simToggle" onclick="toggleSim()">⚡ SIMULATOR</button>
     <button class="icon-btn" onclick="openGlossary()" title="DICT (G)">📖</button>
     <button class="icon-btn" onclick="openBookmarks()" title="SAVED (B)">⭐</button>
     <div class="progress-wrap">
@@ -97,6 +98,9 @@
   </main>
 </div>
 
+<!-- ════ TRADING SIMULATOR (toggled view) ════ -->
+<main class="sim-view" id="simView"></main>
+
 <!-- Lightbox -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
   <img id="lightboxImg" src="" alt="">
@@ -148,5 +152,6 @@
 
 <script src="chart.js"></script>
 <script src="app.js"></script>
+<script src="simulator.js"></script>
 </body>
 </html>

@@ -646,6 +646,8 @@ document.addEventListener('keydown', e => {
     document.activeElement && document.activeElement.blur();
     return;
   }
+  // simulator mode has its own keyboard handling
+  if (document.body.classList.contains('sim-mode')) return;
   // don't hijack keys while typing in notes/search
   const tag = (e.target.tagName || '').toLowerCase();
   if (tag === 'input' || tag === 'textarea') {
