@@ -181,11 +181,15 @@
     view: 72,               // visible bars (zoom)
     follow: true,           // auto-track latest bar
     rightEdge: 0,           // absolute bar index at right edge when not following
+    scaleMin: null, scaleMax: null,  // manual vertical price scale (null = auto-fit)
     tool: 'cursor',         // active drawing tool
     drawColor: '#00f0ff',
     drawings: [],           // committed drawings (data coords) — reset per chart
     _draft: null,           // in-progress drawing
     _pan: null,             // pan drag state
+    _vdrag: null,           // price-axis vertical-scale drag
+    _hdrag: null,           // time-axis horizontal-scale drag
+    _lvldrag: null,         // dragging a TP/SL handle of the open position
     hover: null, hoverIdx: null,
     _geo: null,
   };
@@ -241,7 +245,7 @@
                     <button class="dcol" data-color="#e8eefc" style="--c:#e8eefc" title="white"></button>
                   </div>
                   <div class="sim-canvas-wrap">
-                    <canvas class="sim-canvas" data-canvas></canvas>
+                    <canvas class="sim-canvas" data-canvas title="ลากแกนราคา(ขวา) = ย่อ/ขยายแท่งแนวตั้ง · ลากแกนเวลา(ล่าง) = ซูมแนวนอน · ดับเบิลคลิกแกน = auto"></canvas>
                     <div class="sim-readout" data-readout></div>
                     <button class="sim-live" data-act="live" title="กลับไปแท่งล่าสุด">⊙ LIVE</button>
                   </div>
@@ -443,6 +447,7 @@
     S.chartTrades = [];
     S.drawings = []; S._draft = null;
     S.view = 72; S.follow = true;
+    S.scaleMin = S.scaleMax = null;
     updateLiveBtn();
     autoSL();
     refreshAll();
@@ -450,7 +455,8 @@
   function restartChart() {
     S.cursor = 44; S.pos = null; S.chartTrades = [];
     S.drawings = []; S._draft = null;
-    S.follow = true; updateLiveBtn();
+    S.view = 72; S.follow = true; S.scaleMin = S.scaleMax = null;
+    updateLiveBtn();
     autoSL();
     refreshAll();
   }
@@ -587,7 +593,8 @@
       <div class="pos-pnl" style="color:${op >= 0 ? SC.green : SC.red}">
         Open P/L: ${op >= 0 ? '+' : ''}${f$(op)} <span class="pos-r">(${fR(op / p.riskAmt)})</span>
       </div>
-      <button class="pos-close" data-act="close">✕ CLOSE AT MARKET</button>`;
+      <button class="pos-close" data-act="close">✕ CLOSE AT MARKET</button>
+      <div class="pos-hint">↕ ลากเส้น/ที่จับ SL · TP บนกราฟเพื่อปรับ</div>`;
     el.poswrap.querySelector('[data-act="close"]').onclick = () => { stopPlay(); closeManual(); };
   }
   function renderMiniLog() {
@@ -647,15 +654,19 @@
     const padT = 10, padB = 22, padR = 64, padL = 10;
     const plotL = padL, plotR = w - padR, plotT = padT, plotB = h - padB;
 
-    const rightIdx = S.follow ? S.cursor : Math.max(0, Math.min(S.rightEdge, S.cursor));
+    const rightIdx = S.follow ? S.cursor : Math.max(0, S.rightEdge);  // may exceed cursor → blank space on the right
     const start = rightIdx - S.view + 1;            // may be < 0 (blank space at left)
     const visStart = Math.max(0, start);
+    const lastBar = Math.min(rightIdx, S.cursor);   // candles never drawn past the revealed cursor
 
-    let min = Infinity, max = -Infinity;
-    for (let b = visStart; b <= rightIdx; b++) { min = Math.min(min, S.series[b][2]); max = Math.max(max, S.series[b][1]); }
-    if (S.pos) [S.pos.entry, S.pos.sl, S.pos.tp].forEach(v => { min = Math.min(min, v); max = Math.max(max, v); });
-    if (!isFinite(min)) { min = 0; max = 1; }
-    const pd = (max - min) * 0.10 || 1; min -= pd; max += pd;
+    let amin = Infinity, amax = -Infinity;
+    for (let b = visStart; b <= lastBar; b++) { amin = Math.min(amin, S.series[b][2]); amax = Math.max(amax, S.series[b][1]); }
+    if (S.scaleMin == null && S.pos) [S.pos.entry, S.pos.sl, S.pos.tp].forEach(v => { amin = Math.min(amin, v); amax = Math.max(amax, v); });
+    if (!isFinite(amin)) { amin = 0; amax = 1; }
+    const pd = (amax - amin) * 0.10 || 1;
+    let min, max;
+    if (S.scaleMin != null && S.scaleMax != null && S.scaleMax > S.scaleMin) { min = S.scaleMin; max = S.scaleMax; }
+    else { min = amin - pd; max = amax + pd; }
 
     const step = (plotR - plotL) / (S.view + 1);
     const cw = Math.max(1.5, Math.min(16, step * 0.7));
@@ -672,7 +683,7 @@
     }
     // time grid + bottom-axis labels
     const tickEvery = Math.max(1, Math.round(S.view / 8));
-    for (let b = Math.ceil(visStart / tickEvery) * tickEvery; b <= rightIdx; b += tickEvery) {
+    for (let b = Math.ceil(visStart / tickEvery) * tickEvery; b <= lastBar; b += tickEvery) {
       const xx = X(b);
       ctx.strokeStyle = 'rgba(125,150,180,0.05)';
       ctx.beginPath(); ctx.moveTo(xx, plotT); ctx.lineTo(xx, plotB); ctx.stroke();
@@ -681,18 +692,11 @@
     ctx.strokeStyle = SC.axis;
     ctx.beginPath(); ctx.moveTo(plotR, plotT); ctx.lineTo(plotR, plotB); ctx.moveTo(plotL, plotB); ctx.lineTo(plotR, plotB); ctx.stroke();
 
-    // position zones + lines
-    if (S.pos) {
-      const p = S.pos, yE = Y(p.entry), yS = Y(p.sl), yT = Y(p.tp);
-      ctx.fillStyle = 'rgba(38,166,154,0.10)'; ctx.fillRect(plotL, Math.min(yE, yT), plotR - plotL, Math.abs(yE - yT));
-      ctx.fillStyle = 'rgba(239,83,80,0.10)'; ctx.fillRect(plotL, Math.min(yE, yS), plotR - plotL, Math.abs(yE - yS));
-      axisLine(ctx, plotL, plotR, yE, SC.cyan, 'ENTRY ' + fPx(p.entry), padR);
-      axisLine(ctx, plotL, plotR, yS, SC.red, 'SL ' + fPx(p.sl), padR);
-      axisLine(ctx, plotL, plotR, yT, SC.green, 'TP ' + fPx(p.tp), padR);
-    }
+    // TradingView-style Long/Short position box
+    if (S.pos) drawPosition(ctx, Y, plotL, plotR, padR);
 
     // candles
-    for (let b = visStart; b <= rightIdx; b++) drawCandle(ctx, X(b), S.series[b], Y, cw);
+    for (let b = visStart; b <= lastBar; b++) drawCandle(ctx, X(b), S.series[b], Y, cw);
 
     // user drawings (clipped to plot area)
     ctx.save();
@@ -709,13 +713,15 @@
       ctx.beginPath(); ctx.arc(cx, cy, 3.5, 0, Math.PI * 2); ctx.fill();
     });
 
-    // last price line + right-axis tag
-    const lc = S.series[S.cursor], yL = Y(lc[3]);
-    ctx.strokeStyle = 'rgba(255,179,0,0.45)'; ctx.setLineDash([2, 3]); ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(plotL, yL); ctx.lineTo(plotR, yL); ctx.stroke(); ctx.setLineDash([]);
-    ctx.fillStyle = SC.gold; ctx.fillRect(plotR, yL - 7, padR, 14);
-    ctx.fillStyle = SC.bg; ctx.font = "bold 10px 'Share Tech Mono', monospace";
-    ctx.fillText(lc[3].toFixed(2), plotR + 5, yL + 3);
+    // last price line + right-axis tag (only when the latest bar is on-screen)
+    if (S.cursor >= visStart && S.cursor <= rightIdx) {
+      const lc = S.series[S.cursor], yL = Y(lc[3]);
+      ctx.strokeStyle = 'rgba(255,179,0,0.45)'; ctx.setLineDash([2, 3]); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(plotL, yL); ctx.lineTo(plotR, yL); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = SC.gold; ctx.fillRect(plotR, yL - 7, padR, 14);
+      ctx.fillStyle = SC.bg; ctx.font = "bold 10px 'Share Tech Mono', monospace";
+      ctx.fillText(lc[3].toFixed(2), plotR + 5, yL + 3);
+    }
 
     // crosshair (hover)
     if (S.hover) drawCrosshair(ctx, plotL, plotR, plotT, plotB, padR);
@@ -729,11 +735,89 @@
     const top = Math.min(yo, yc), hgt = Math.max(1, Math.abs(yo - yc));
     ctx.fillRect(cx - cw / 2, top, cw, hgt);
   }
-  function axisLine(ctx, x1, x2, yy, color, label, padR) {
-    ctx.strokeStyle = color; ctx.lineWidth = 1.1; ctx.setLineDash([5, 4]);
-    ctx.beginPath(); ctx.moveTo(x1, yy); ctx.lineTo(x2, yy); ctx.stroke(); ctx.setLineDash([]);
-    ctx.fillStyle = color; ctx.font = "9px 'Share Tech Mono', monospace";
-    ctx.fillText(label, x1 + 3, yy - 3);
+  // ── TradingView-style position box (green profit zone / red risk zone) ──
+  function drawPosition(ctx, Y, plotL, plotR, padR) {
+    const p = S.pos; if (!p) return;
+    const g = S._geo;
+    const xE = (p.openBar != null && p.openBar >= g.start) ? Math.max(plotL, gx(p.openBar)) : plotL;
+    const yE = Y(p.entry), yS = Y(p.sl), yT = Y(p.tp);
+    const rr = Math.abs((p.tp - p.entry) / (p.entry - p.sl)) || 0;
+    const boxW = plotR - xE;
+    const op = openPnl(), rNow = op / p.riskAmt;
+
+    // profit zone (entry → TP) green, risk zone (entry → SL) red
+    ctx.fillStyle = 'rgba(38,166,154,0.13)';
+    ctx.fillRect(xE, Math.min(yE, yT), boxW, Math.abs(yE - yT));
+    ctx.fillStyle = 'rgba(239,83,80,0.13)';
+    ctx.fillRect(xE, Math.min(yE, yS), boxW, Math.abs(yE - yS));
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(38,166,154,0.5)';
+    ctx.strokeRect(xE + 0.5, Math.min(yE, yT) + 0.5, boxW - 1, Math.max(1, Math.abs(yE - yT)));
+    ctx.strokeStyle = 'rgba(239,83,80,0.5)';
+    ctx.strokeRect(xE + 0.5, Math.min(yE, yS) + 0.5, boxW - 1, Math.max(1, Math.abs(yE - yS)));
+
+    // entry / TP / SL guide lines + right-axis price tags
+    posLine(ctx, xE, plotR, yT, 'rgba(38,166,154,0.85)');
+    posLine(ctx, xE, plotR, yS, 'rgba(239,83,80,0.85)');
+    posLine(ctx, xE, plotR, yE, 'rgba(216,230,255,0.7)');
+    priceTag(ctx, plotR, yT, padR, TVUP, '#04130f', fPx(p.tp));
+    priceTag(ctx, plotR, yS, padR, TVDN, '#1c0709', fPx(p.sl));
+    priceTag(ctx, plotR, yE, padR, '#27374e', '#dfeaff', fPx(p.entry));
+
+    // draggable grip handles on TP & SL lines
+    const xMid = (xE + plotR) / 2;
+    drawGrip(ctx, xMid, yT, TVUP);
+    drawGrip(ctx, xMid, yS, TVDN);
+
+    // zone labels (target / stop)
+    ctx.font = "bold 9px 'Share Tech Mono', monospace";
+    ctx.fillStyle = TVUP;
+    ctx.fillText(`TARGET +${rr.toFixed(1)}R`, xE + 6, (Math.min(yE, yT) + Math.max(yE, yT)) / 2 + 3);
+    ctx.fillStyle = TVDN;
+    ctx.fillText('STOP -1.0R', xE + 6, (Math.min(yE, yS) + Math.max(yE, yS)) / 2 + 3);
+
+    // direction badge anchored on the entry line
+    const dirTxt = (p.dir === 'long' ? '▲ LONG ' : '▼ SHORT ') + rr.toFixed(1) + 'R';
+    ctx.font = "bold 9px 'Share Tech Mono', monospace";
+    const bw = ctx.measureText(dirTxt).width + 12;
+    ctx.fillStyle = p.dir === 'long' ? TVUP : TVDN;
+    ctx.fillRect(xE, yE - 9, bw, 18);
+    ctx.fillStyle = '#03130d';
+    ctx.fillText(dirTxt, xE + 6, yE + 3);
+
+    // live P/L pill at right edge of the entry line
+    const plTxt = `${rNow >= 0 ? '+' : ''}${rNow.toFixed(2)}R`;
+    ctx.font = "bold 9px 'Share Tech Mono', monospace";
+    const pw = ctx.measureText(plTxt).width + 10;
+    ctx.fillStyle = rNow >= 0 ? 'rgba(38,166,154,0.92)' : 'rgba(239,83,80,0.92)';
+    ctx.fillRect(plotR - pw - 2, yE - 9, pw, 18);
+    ctx.fillStyle = '#03130d';
+    ctx.fillText(plTxt, plotR - pw + 3, yE + 3);
+  }
+  function posLine(ctx, x1, x2, y, color) {
+    ctx.strokeStyle = color; ctx.lineWidth = 1; ctx.setLineDash([5, 4]);
+    ctx.beginPath(); ctx.moveTo(x1, y); ctx.lineTo(x2, y); ctx.stroke(); ctx.setLineDash([]);
+  }
+  function priceTag(ctx, plotR, y, padR, bg, fg, text) {
+    ctx.fillStyle = bg; ctx.fillRect(plotR, y - 7, padR, 14);
+    ctx.fillStyle = fg; ctx.font = "bold 10px 'Share Tech Mono', monospace";
+    ctx.fillText(text, plotR + 4, y + 3);
+  }
+  function drawGrip(ctx, x, y, col) {
+    const w = 16, h = 9;
+    ctx.fillStyle = col; ctx.fillRect(x - w / 2, y - h / 2, w, h);
+    ctx.fillStyle = 'rgba(3,19,13,0.85)';
+    for (let i = -1; i <= 1; i++) ctx.fillRect(x + i * 3 - 0.5, y - 2.5, 1, 5);
+  }
+  // hit-test the open position's TP/SL grab lines → 'tp' | 'sl' | null
+  function posHandleAt(x, y) {
+    if (!S.pos || !S._geo) return null;
+    const g = S._geo, p = S.pos;
+    const xE = (p.openBar != null && p.openBar >= g.start) ? Math.max(g.plotL, gx(p.openBar)) : g.plotL;
+    if (x < xE - 6 || x > g.plotR + 2) return null;
+    if (Math.abs(y - gy(p.tp)) <= 6) return 'tp';
+    if (Math.abs(y - gy(p.sl)) <= 6) return 'sl';
+    return null;
   }
   function hexA(hex, a) {
     const m = hex.replace('#', '');
@@ -800,7 +884,17 @@
     cv.addEventListener('mousedown', e => {
       if (!S._geo) return;
       const { x, y } = xy(e);
-      if (S.tool === 'cursor') { S._pan = { startX: x, startRight: S._geo.rightIdx }; cv.style.cursor = 'grabbing'; }
+      const g = S._geo;
+      // drag on price axis (right) → vertical scale candles
+      if (x > g.plotR) { S._vdrag = { startY: y, min: g.min, max: g.max }; cv.style.cursor = 'ns-resize'; return; }
+      // drag on time axis (bottom) → horizontal scale (zoom)
+      if (y > g.plotB) { S._hdrag = { startX: x, view: S.view }; cv.style.cursor = 'ew-resize'; return; }
+      // grab a TP/SL handle of the open position
+      if (S.pos && S.tool === 'cursor') {
+        const h = posHandleAt(x, y);
+        if (h) { S._lvldrag = { which: h }; cv.style.cursor = 'ns-resize'; return; }
+      }
+      if (S.tool === 'cursor') { S._pan = { startX: x, startRight: g.rightIdx, startY: y, vEngaged: S.scaleMin != null, baseMin: g.min, baseMax: g.max }; cv.style.cursor = 'grabbing'; }
       else if (S.tool === 'eraser') { eraseAt(x, y); }
       else { const pt = { bar: gbar(x), price: gprice(y) }; S._draft = { type: S.tool, a: pt, b: { bar: pt.bar, price: pt.price }, color: S.drawColor }; }
     });
@@ -808,14 +902,53 @@
     window.addEventListener('mousemove', e => {
       if (!S._geo || !el.canvas || S.tab !== 'replay') return;
       const { x, y } = xy(e);
+      // price-axis vertical scaling (drag up = stretch candles taller, down = compress)
+      if (S._vdrag) {
+        const center = (S._vdrag.min + S._vdrag.max) / 2;
+        const half = (S._vdrag.max - S._vdrag.min) / 2 * Math.exp((y - S._vdrag.startY) / 180);
+        S.scaleMin = center - half; S.scaleMax = center + half;
+        drawReplay(); return;
+      }
+      // time-axis horizontal scaling (drag left = zoom in, right = zoom out)
+      if (S._hdrag) {
+        S.view = Math.max(16, Math.min(240, Math.round(S._hdrag.view * Math.exp((x - S._hdrag.startX) / 240))));
+        drawReplay(); return;
+      }
+      // dragging a TP/SL handle of the open position
+      if (S._lvldrag && S.pos) {
+        const price = gprice(y), p = S.pos, tick = 0.1;
+        if (S._lvldrag.which === 'tp') {
+          p.tp = p.dir === 'long' ? Math.max(p.entry + tick, price) : Math.min(p.entry - tick, price);
+        } else {
+          p.sl = p.dir === 'long' ? Math.min(p.entry - tick, price) : Math.max(p.entry + tick, price);
+          p.riskAmt = Math.abs(p.entry - p.sl) * p.size;   // stop stays exactly 1R
+        }
+        drawReplay(); return;
+      }
       if (S._pan) {
+        // horizontal pan — free in both directions, with blank space allowed on either side
         const bars = Math.round((x - S._pan.startX) / S._geo.step);
-        let nr = Math.max(S.view - 1, Math.min(S.cursor, S._pan.startRight - bars));
-        S.rightEdge = nr; S.follow = (nr >= S.cursor); updateLiveBtn();
+        const minR = Math.min(S.cursor, Math.max(2, Math.floor(S.view * 0.12)));
+        const maxR = S.cursor + Math.floor(S.view * 0.6);   // push the latest bar left (blank on the right)
+        const nr = Math.max(minR, Math.min(maxR, S._pan.startRight - bars));
+        const curRight = S.follow ? S.cursor : S.rightEdge;
+        if (nr !== curRight) { S.rightEdge = nr; S.follow = false; updateLiveBtn(); }
+        // free vertical pan: any vertical intent locks the scale & moves price (TradingView-style)
+        if (!S._pan.vEngaged && Math.abs(y - S._pan.startY) > 6) S._pan.vEngaged = true;
+        if (S._pan.vEngaged) {
+          const ppp = (S._pan.baseMax - S._pan.baseMin) / (S._geo.plotB - S._geo.plotT);
+          const shift = (y - S._pan.startY) * ppp;
+          S.scaleMin = S._pan.baseMin + shift; S.scaleMax = S._pan.baseMax + shift;
+        }
         drawReplay(); return;
       }
       if (S._draft) { S._draft.b = { bar: gbar(x), price: gprice(y) }; drawReplay(); return; }
       const g = S._geo;
+      // cursor feedback: price axis, time axis, or a TP/SL handle
+      if (x > g.plotR && y <= g.plotB) el.canvas.style.cursor = 'ns-resize';
+      else if (y > g.plotB) el.canvas.style.cursor = 'ew-resize';
+      else if (S.pos && S.tool === 'cursor' && posHandleAt(x, y)) el.canvas.style.cursor = 'ns-resize';
+      else resetCursor();
       if (x >= g.plotL && x <= g.plotR && y >= g.plotT && y <= g.plotB) {
         S.hover = { x, y };
         updateLegend(Math.max(0, Math.min(S.cursor, Math.round(gbar(x)))));
@@ -824,7 +957,10 @@
     });
 
     window.addEventListener('mouseup', () => {
-      if (S._pan) { S._pan = null; if (el.canvas) el.canvas.style.cursor = S.tool === 'cursor' ? 'grab' : (S.tool === 'eraser' ? 'pointer' : 'crosshair'); return; }
+      if (S._lvldrag) { S._lvldrag = null; resetCursor(); refreshAll(); return; }
+      if (S._vdrag) { S._vdrag = null; resetCursor(); return; }
+      if (S._hdrag) { S._hdrag = null; resetCursor(); return; }
+      if (S._pan) { S._pan = null; resetCursor(); return; }
       if (S._draft) {
         const d = S._draft; S._draft = null;
         if (d.type === 'hline') S.drawings.push(d);
@@ -834,13 +970,24 @@
     });
 
     cv.addEventListener('mouseleave', () => { if (!S._pan && !S._draft && S.hover) { S.hover = null; updateLegend(S.cursor); drawReplay(); } });
+    // double-click an axis to reset it to auto
+    cv.addEventListener('dblclick', e => {
+      if (!S._geo) return;
+      const { x, y } = xy(e), g = S._geo;
+      if (x > g.plotR) { S.scaleMin = S.scaleMax = null; drawReplay(); }
+      else if (y > g.plotB) { S.view = 72; drawReplay(); }
+    });
     cv.addEventListener('wheel', e => {
       e.preventDefault();
-      S.view = Math.max(24, Math.min(200, S.view + (e.deltaY > 0 ? 8 : -8)));
+      S.view = Math.max(16, Math.min(240, S.view + (e.deltaY > 0 ? 8 : -8)));
       drawReplay();
     }, { passive: false });
 
     cv.style.cursor = 'grab';
+  }
+  function resetCursor() {
+    if (!el.canvas) return;
+    el.canvas.style.cursor = S.tool === 'cursor' ? 'grab' : (S.tool === 'eraser' ? 'pointer' : 'crosshair');
   }
   function eraseAt(px, py) {
     let bestI = -1, bestD = 10;

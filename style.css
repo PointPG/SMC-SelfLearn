@@ -443,6 +443,7 @@ body.sim-mode .sim-view { display: block; animation: fadeUp 0.4s ease; }
 .pos-r { font-size: 11px; opacity: 0.8; }
 .pos-close { width: 100%; background: transparent; border: 1px solid var(--red); color: var(--red); font-family: var(--mono); font-size: 12px; letter-spacing: 1px; padding: 9px; border-radius: 4px; cursor: pointer; transition: all 0.2s; }
 .pos-close:hover { background: var(--red); color: var(--bg); box-shadow: 0 0 16px rgba(255,56,96,0.4); }
+.pos-hint { margin-top: 8px; font-size: 10px; color: var(--muted); text-align: center; font-family: var(--thai); letter-spacing: 0.3px; }
 
 /* ticket */
 .tk-field { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 9px; }
